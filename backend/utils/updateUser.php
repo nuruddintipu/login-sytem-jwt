@@ -11,12 +11,13 @@ function updateUser($guid, $keyToUpdate, $updatedValue){
 
     foreach ($users as $index => $user) {
         if ($user['guid'] === $guid){
-            $user[$index][$keyToUpdate] = $updatedValue;
+            $users[$index][$keyToUpdate] = $updatedValue;
             $isUserUpdated = true;
             break;
         }
     }
     if($isUserUpdated){
+        $usersData['users'] = $users;
         $newUser = '<?php return ' . var_export($usersData, true) . ';';
         file_put_contents('../storage/userData.php', $newUser);
         return true;
