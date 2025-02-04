@@ -24,7 +24,7 @@ function registerUser($email, $password) {
     $usersData['users'][] = $newUser;
 
     $newContent = '<?php return ' . var_export($usersData, true) . ';';
-    file_put_contents('userData.php', $newContent);
+    file_put_contents('../storage/userData.php', $newContent);
 
     return true;
 }
