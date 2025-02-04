@@ -11,7 +11,7 @@
     array (
       'guid' => '3d12b088-086f-4340-b065-29517c43d1bb',
       'email' => 'user1@example.com',
-      'password' => '$2y$10$2VFq7RdWOqnAPp8y6iYBoeQKVJnw/PODY.rZ/1hLQYro0xoZWeAP.',
+      'password' => '$2y$10$R5urHye7Twb079Qz0NLdseDt70E2j4Axp3FoMO0ePakql5uepoZ0e',
     ),
   ),
   'admin' => 
