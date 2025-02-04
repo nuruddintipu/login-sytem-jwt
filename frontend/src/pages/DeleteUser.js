@@ -22,11 +22,11 @@ export const DeleteUser = () => {
             setResponseMessage(errors);
             return;
         }
-        user.guid = JSON.parse(localStorage.getItem("user")).guid;
+
         const result = await deleteUser(user);
+
         if(result.success){
             setResponseMessage(result.message);
-            localStorage.removeItem("user");
             navigate(getRoutePath("LOGIN"));
         } else {
             setResponseMessage(result.message || "Something went wrong.");
