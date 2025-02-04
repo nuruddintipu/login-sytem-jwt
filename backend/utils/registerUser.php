@@ -2,7 +2,7 @@
 require_once 'generateGuid.php';
 require_once 'getUserByEmail.php';
 function registerUser($email, $password) {
-    $usersData = include '../api/userData.php';
+    $usersData = include '../storage/userData.php';
 
     if (!isset($usersData['users']) || !is_array($usersData['users'])) {
         $usersData['users'] = [];

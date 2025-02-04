@@ -1,41 +1,73 @@
 <?php
 require_once '../utils/headers.php';
 require_once '../utils/approveOptionsMethod.php';
+require_once '../utils/jwtHelper.php';
 
 $data = json_decode(file_get_contents('php://input'), true);
 
-require_once '../utils/getUserByEmail.php';
-require_once '../utils/getUserByGuid.php';
 $response = ['success' => false, 'message' => 'Invalid request'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email = isset($data['email']) ? trim($data['email']) : '';
-    $guid = isset($data['guid']) ? trim($data['guid']) : '';
+    if(isset($_COOKIE['accessToken'])) {
+        $accessToken = $_COOKIE['accessToken'];
+        $isRefreshToken = false;
+        try{
+            $userData = verifyToken($accessToken, $isRefreshToken);
+            $response = [
+                'success' => true,
+                'message' => 'User authorized successfully',
+                'user' => [
+                    'email' => $userData['email'],
+                    'guid' => $userData['sub']
+                ]
+            ];
+        } catch (Exception $e) {
+            if(isset($_COOKIE['refreshToken'])) {
+                $refreshToken = $_COOKIE['refreshToken'];
+                $isRefreshToken = true;
 
-    if (empty($guid)) {
-        http_response_code(400);
-        $response['message'] = 'GUID is required';
-        echo json_encode($response);
-        exit;
-    }
+                try {
+                    $userData = verifyToken($refreshToken, $isRefreshToken);
+                    $newAccessToken = createToken($userData);
+                    $newRefreshToken = createToken($userData, $isRefreshToken);
 
-    if (empty($email)) {
-        http_response_code(400);
-        $response['message'] = 'Email is required';
-        echo json_encode($response);
-        exit;
-    }
 
-    $user = getUserByGuid($guid);
-    if (!$user) {
-        http_response_code(404);
-        $response['message'] = 'User not found';
-    } elseif ($user['email'] !== $email) {
-        http_response_code(403);
-        $response['message'] = 'Unauthorized';
+                    setcookie('accessToken', $accessToken, [
+                        'expires' => time() + ACCESS_TOKEN_EXPIRE,
+                        'httponly' => true,
+                        'path' => '/',
+                        'secure' => true
+                    ]);
+
+                    setcookie('refreshToken', $newRefreshToken, [
+                        'expires' => time() + REFRESH_TOKEN_EXPIRE,
+                        'httponly' => true,
+                        'path' => '/',
+                        'secure' => true
+                    ]);
+
+                    $response = [
+                        'success' => true,
+                        'message' => 'User authorized successfully',
+                        'user' => [
+                            'email' => $userData['email'],
+                            'guid' => $userData['sub']
+                        ]
+                    ];
+                } catch (Exception $e) {
+                    http_response_code(401);
+                    $response['message'] = 'Unauthorized';
+                }
+            } else {
+                http_response_code(403);
+                $response['message'] = 'Forbidden';
+            }
+        }
     } else {
-        $response = ['success' => true, 'message' => 'User authorized successfully'];
+        http_response_code(401);
+        $response['message'] = 'Unauthorized';
     }
+
 } else {
     http_response_code(405);
     $response['message'] = 'Method not allowed';

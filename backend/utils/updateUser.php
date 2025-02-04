@@ -1,6 +1,6 @@
 <?php
 function updateUser($guid, $keyToUpdate, $updatedValue){
-    $usersData = include '../api/userData.php';
+    $usersData = include '../storage/userData.php';
 
     if(!isset($usersData['users']) || !is_array($usersData['users'])){
         return false;
@@ -18,7 +18,7 @@ function updateUser($guid, $keyToUpdate, $updatedValue){
     }
     if($isUserUpdated){
         $newUser = '<?php return ' . var_export($usersData, true) . ';';
-        file_put_contents('../api/userData.php', $newUser);
+        file_put_contents('../storage/userData.php', $newUser);
         return true;
     }
 

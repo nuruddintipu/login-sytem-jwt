@@ -16,6 +16,10 @@ class ComposerStaticInit7422faf8f33d1f1cdfca8767e0ffc0f4
             'Ramsey\\Uuid\\' => 12,
             'Ramsey\\Collection\\' => 18,
         ),
+        'F' => 
+        array (
+            'Firebase\\JWT\\' => 13,
+        ),
         'B' => 
         array (
             'Brick\\Math\\' => 11,
@@ -30,6 +34,10 @@ class ComposerStaticInit7422faf8f33d1f1cdfca8767e0ffc0f4
         'Ramsey\\Collection\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/collection/src',
+        ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
         ),
         'Brick\\Math\\' => 
         array (

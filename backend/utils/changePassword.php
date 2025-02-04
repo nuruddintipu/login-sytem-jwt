@@ -1,7 +1,7 @@
 <?php
 
 function changePassword($guid, $newPassword) {
-    $usersData = include '../api/userData.php';
+    $usersData = include '../storage/userData.php';
 
     if(!isset($usersData['users']) || !is_array($usersData['users'])) {
         return false;
