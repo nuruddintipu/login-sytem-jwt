@@ -2,22 +2,9 @@
 require_once '../utils/headers.php';
 require_once '../utils/approveOptionsMethod.php';
 require_once '../utils/jwtHelper.php';
-
+require_once '../utils/clearAuthCookies.php';
 function logoutUser() {
-    setcookie('accessToken', '', [
-        'expires' => time() - 3600,
-        'path' => '/',
-        'httponly' => true,
-        'secure' => true,
-    ]);
-
-    setcookie('refreshToken', '', [
-        'expires' => time() - 3600,
-        'path' => '/',
-        'httponly' => true,
-        'secure' => true,
-    ]);
-
+    clearAuthCookies();
     return ['success' => true, 'message' => 'User logged out successfully'];
 }
 
