@@ -7,15 +7,17 @@ function deleteUser($guid) {
         return false;
     }
 
-    foreach($usersData['users'] as $key => $user) {
-        if($user['guid'] == $guid) {
-            array_splice($usersData['users'], $key, 1);
+    $updatedUsers = array_filter($usersData['users'], function ($user) use ($guid) {
+        return $user['guid'] !== $guid;
+    });
 
-            $newContent = '<?php return ' . var_export($usersData, true) . ';';
-            file_put_contents('userData.php', $newContent);
-
-            return true;
-        }
+    if (count($updatedUsers) === count($usersData['users'])) {
+        return false;
     }
-    return false;
+
+    $usersData['users'] = array_values($updatedUsers);
+    $newUserData = '<?php return ' . var_export($usersData, true) . ';';
+    file_put_contents('../storage/userData.php', $newUserData);
+
+    return true;
 }

@@ -19,7 +19,7 @@ function changePassword($guid, $newPassword) {
 
     if($isPasswordUpdated) {
         $newContent = '<?php return  ' . var_export($usersData, true) . ';' . PHP_EOL;
-        file_put_contents('userData.php', $newContent);
+        file_put_contents('../storage/userData.php', $newContent);
         return true;
 
     }
