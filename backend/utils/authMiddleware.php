@@ -5,22 +5,21 @@ function authenticateUser() {
     $accessToken = isset($_COOKIE['accessToken']) ? $_COOKIE['accessToken'] : null;
     $refreshToken = isset($_COOKIE['refreshToken']) ? $_COOKIE['refreshToken'] : null;
 
-    if ($accessToken) {
-        try {
-            $userData = verifyToken($accessToken, false);
-            return successResponse($userData);
-        } catch (Exception $e) {
-            error_log("Access token verification failed: " . $e->getMessage());
-        }
-    }
+    if ($accessToken) return handleAccessToken($accessToken);
 
-    if ($refreshToken) {
-        return handleRefreshToken($refreshToken);
-    }
+    if ($refreshToken) return handleRefreshToken($refreshToken);
 
     return unauthorizedResponse();
 }
 
+function handleAccessToken($accessToken) {
+    try {
+        $userData = verifyToken($accessToken, false);
+        return successResponse($userData);
+    } catch (Exception $e) {
+        error_log("Access token verification failed: " . $e->getMessage());
+    }
+}
 function handleRefreshToken($refreshToken) {
     try {
         $userData = verifyToken($refreshToken, true);
