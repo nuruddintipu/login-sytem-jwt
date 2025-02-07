@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Navigate } from "react-router-dom";
+import {Navigate, useLocation} from "react-router-dom";
 import { getRoutePath } from "./NamedLink";
 import isAuthenticated from "../utils/authenticateUser";
 
 const ProtectedRoute = ({ routeElement }) => {
     const [isAuth, setIsAuth] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
         const checkAuth = async () => {
@@ -12,7 +13,7 @@ const ProtectedRoute = ({ routeElement }) => {
             setIsAuth(authStatus);
         };
         checkAuth();
-    }, []);
+    }, [location]);
 
     if (isAuth === null) {
         return <div>Loading...</div>;
