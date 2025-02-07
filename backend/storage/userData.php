@@ -5,7 +5,7 @@
     array (
       'guid' => 'b62df48a-3e8b-47b4-abed-5217d4a1b525',
       'email' => 'nuruddintipu.connect@gmail.com',
-      'password' => '$2y$10$w8BiViS8UDj1B0x0iDisHua/Eg..y1T0Htfdb0JyVg4fAlxXekaMm',
+      'password' => '$2y$10$Sny9NjggnRS3mEJB9E51Ped4F5isX9imJ44mM0VWuYoxWA5I9yAFi',
     ),
     1 => 
     array (
