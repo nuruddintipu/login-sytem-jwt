@@ -12,11 +12,12 @@ define("ACCESS_TOKEN_EXPIRE", $config['ACCESS_TOKEN_EXPIRE']);
 define("REFRESH_TOKEN_EXPIRE", $config['REFRESH_TOKEN_EXPIRE']);
 
 function createToken($user, $isRefresh = false){
+    $sub = isset($user['sub']) ? $user['sub'] : (isset($user['guid']) ? $user['guid'] : null);
     $payload = [
       'iss' => 'login-system',
       'iat' => time(),
       'exp' => time() + ($isRefresh ? REFRESH_TOKEN_EXPIRE : ACCESS_TOKEN_EXPIRE),
-      'sub' => $user['guid'],
+      'sub' => $sub,
       'email' => $user['email'],
       'type' => $isRefresh ? 'refresh' : 'access'
     ];
@@ -28,7 +29,9 @@ function createToken($user, $isRefresh = false){
 function verifyToken($token, $isRefresh = false){
     try {
         $key = $isRefresh ? REFRESH_SECRET_KEY : SECRET_KEY;
-        return (array) JWT::decode($token, new Key($key, ALGORITHM));
+        $decoded = JWT::decode($token, new Key($key, ALGORITHM));
+        return (array) $decoded;
+
     } catch (Exception $e) {
         return null;
     }

@@ -2,27 +2,49 @@
 require_once 'jwtHelper.php';
 
 function authenticateUser() {
-    $accessToken = isset($_COOKIE['accessToken']) ? $_COOKIE['accessToken'] : null;
-    $refreshToken = isset($_COOKIE['refreshToken']) ? $_COOKIE['refreshToken'] : null;
+    $accessToken = getCookieValue('accessToken');
+    $refreshToken = getCookieValue('refreshToken');
 
-    if ($accessToken) return handleAccessToken($accessToken);
-
-    if ($refreshToken) return handleRefreshToken($refreshToken);
+    if ($accessToken) {
+        $response = handleAccessToken($accessToken);
+        if ($response['success']) {
+            return $response;
+        }
+        if($response['invalid'] && $refreshToken){
+            return handleRefreshToken($refreshToken);
+        }
+    }
+    if ($refreshToken) {
+        return handleRefreshToken($refreshToken);
+    }
 
     return unauthorizedResponse();
 }
 
 function handleAccessToken($accessToken) {
-    try {
-        $userData = verifyToken($accessToken, false);
-        return successResponse($userData);
-    } catch (Exception $e) {
-        error_log("Access token verification failed: " . $e->getMessage());
+    $userData = verifyToken($accessToken, false);
+    if (!$userData) {
+        error_log("Access token expired");
+        return ['success' => false, 'invalid' => true];
     }
+    return successResponse($userData);
 }
+
+
 function handleRefreshToken($refreshToken) {
+    $isRefreshToken = true;
+    $userData = verifyToken($refreshToken, $isRefreshToken);
+    if (!$userData) {
+        error_log("Refresh token expired");
+        return unauthorizedResponse();
+    }
+
+    return regenerateTokens($userData);
+}
+
+function regenerateTokens($userData){
     try {
-        $userData = verifyToken($refreshToken, true);
+
         $newAccessToken = createToken($userData);
         $newRefreshToken = createToken($userData, true);
 
@@ -35,20 +57,20 @@ function handleRefreshToken($refreshToken) {
 }
 
 function setAuthCookies($accessToken, $refreshToken) {
-    setcookie('accessToken', $accessToken, [
-        'expires' => time() + ACCESS_TOKEN_EXPIRE,
-        'httponly' => true,
-        'path' => '/',
-        'secure' => true
-    ]);
+    setSecureCookie('accessToken', $accessToken, 3600);
+    setSecureCookie('refreshToken', $refreshToken, 3600);
+}
 
-    setcookie('refreshToken', $refreshToken, [
-        'expires' => time() + REFRESH_TOKEN_EXPIRE,
+
+function setSecureCookie($name, $value, $expiry) {
+    setcookie($name, $value, [
+        'expires' => time() + $expiry,
         'httponly' => true,
         'path' => '/',
         'secure' => true
     ]);
 }
+
 
 function successResponse($userData) {
     return [
@@ -62,4 +84,8 @@ function unauthorizedResponse() {
         'success' => false,
         'message' => 'Unauthorized'
     ];
+}
+
+function getCookieValue($name) {
+    return isset($_COOKIE[$name]) ? $_COOKIE[$name] : null;
 }

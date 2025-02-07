@@ -10,6 +10,7 @@ $response = ['success' => false, 'message' => 'Invalid request'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $authResponse = authenticateUser();
+    error_log(json_encode($authResponse));
 
     if ($authResponse['success']) {
         $userData = $authResponse['user'];
